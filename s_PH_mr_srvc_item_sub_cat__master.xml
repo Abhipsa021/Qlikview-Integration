@@ -1,0 +1,730 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DSExport>
+   <Header CharacterSet="CP1252" ExportingTool="IBM InfoSphere DataStage Export" ToolVersion="8" ServerName="IT-INFOSPHERE-E001.IKEA.COM" ToolInstanceID="CTS_CLA" Date="2019-04-17" Time="13.41.30" ServerVersion="11.5"/>
+   <Job Identifier="s_PH_mr_srvc_item_sub_cat__master" DateModified="2018-05-31" TimeModified="12.59.39">
+      <Record Identifier="ROOT" Type="JobDefn" Readonly="0">
+         <Property Name="Name">s_PH_mr_srvc_item_sub_cat__master</Property>
+         <Property Name="NextID">62</Property>
+         <Property Name="Container">V0</Property>
+         <Property Name="FullDescription">Publishes data made available by Validation processing or, Extract processing where there are no Validation violations.  Simply inserts the data made available adding an effective start date of the BATCH_DT after updating (or &apos;closing&apos;) any &apos;open&apos; rows for the same source primary key by updating the effective end date to the batch date minus 1 day.   Processing of event data which is never updated would not perform the initial update step to &apos;close&apos; rows and this job should not appear in this sequence.</Property>
+         <Property Name="JobVersion">56.0.0</Property>
+         <Property Name="JobControlCode" PreFormatted="1">* Tokens were replaced below as follows:
+* IdV0S93%%Result2%%0 &lt;= p_PH_mr_srvc_item_sub_cat__31_update.$UserStatus
+* IdV0S93%%Result1%%1 &lt;= p_PH_mr_srvc_item_sub_cat__31_update.$JobStatus
+* IdV0S93%%Name%%2 &lt;= p_PH_mr_srvc_item_sub_cat__31_update.$JobName
+* IdV0S95%%Result2%%3 &lt;= p_PH_mr_srvc_item_sub_cat__32_insert.$UserStatus
+* IdV0S95%%Result1%%4 &lt;= p_PH_mr_srvc_item_sub_cat__32_insert.$JobStatus
+* IdV0S95%%Name%%5 &lt;= p_PH_mr_srvc_item_sub_cat__32_insert.$JobName
+*
+*** [Generated at 2018-05-31 12:59:39 - 11.5.0.0]
+   $INCLUDE DSINCLUDE DSJ_XFUNCS.H
+   EQU Time$$ Lit &quot;Oconv(Time(), &apos;MTS:&apos;):&apos;: &apos;&quot;
+****************************************
+* Graphical Sequencer generated code for Job s_PH_mr_srvc_item_sub_cat__master
+****************************************
+   
+   handle$list = &quot;&quot;
+   id$list = &quot;&quot;
+   abort$list = &quot;&quot;
+   b$Abandoning = @False
+   b$CPRestarted = @False
+   b$InErrorRef = @False
+   summary$restarting = @False
+*** Create new checkpoint for sequence if not restarting
+   If DSCheckPointExists(DSJ.ME, cp$dtm) Then GoTo L$RESTART
+   Call DSLogInfo(DSMakeMsg(&quot;DSTAGE_JSG_M_0015\Starting new run of checkpointed Sequence job&quot;, &quot;&quot;), &quot;@Coordinator&quot;)
+   If (Not(DSCheckPointValidate(DSJ.ME, cp$msg))) Then
+      err$source = &quot;@Coordinator&quot;; err$number = -1
+      msg$ = DSMakeMsg(&quot;DSTAGE_JSG_M_0016\Error creating checkpoint record&lt;L&gt;%1&quot;, cp$msg)
+      msg$id = &quot;@Coordinator&quot;; GoTo L$ERROR
+   End
+   GoTo L$MAINSTART
+L$RESTART:
+*** Validate restarted job matches prior state
+   summary$restarting = @True
+   Call DSLogInfo(DSMakeMsg(&quot;DSTAGE_JSG_M_0017\Sequence job is being restarted after failure&lt;L&gt;Checkpoint record last modified at %1&quot;, cp$dtm), &quot;@Coordinator&quot;)
+   b$CPRestarted = @True
+   If Not(DSCheckPointValidate(DSJ.ME, cp$msg)) Then
+      Call DSLogWarn(cp$msg, &quot;@Coordinator&quot;)
+   End
+L$MAINSTART:
+*** Sequence start point
+   summary$ = DSMakeMsg(&quot;DSTAGE_JSG_M_0048\Summary of sequence run&quot;, &quot;&quot;)
+   If summary$restarting Then
+      summary$&lt;1,-1&gt; = Time$$:Convert(@VM, &quot; &quot;, DSMakeMsg(&quot;DSTAGE_JSG_M_0049\Sequence restarted after failure&quot;, &quot;&quot;))
+   End Else
+      summary$&lt;1,-1&gt; = Time$$:Convert(@VM, &quot; &quot;, DSMakeMsg(&quot;DSTAGE_JSG_M_0050\Sequence started (checkpointing on)&quot;, &quot;&quot;))
+   End
+   GoTo L$V0S93$START
+L$RETURN$1:
+   GoTo L$WAITFORJOB
+**************************************************
+L$V0S93$START:
+*** Activity &quot;p_PH_mr_srvc_item_sub_cat__31_update&quot;: Initialize job
+   b$InErrorRef$V0S93 = b$InErrorRef
+   h$V0S93 = DSAttachJob(&quot;p_PH_mr_srvc_item_sub_cat__31_update&quot;, DSJ.ERRNONE)
+   If (Not(h$V0S93)) Then
+      err$source = &quot;p_PH_mr_srvc_item_sub_cat__31_update&quot;; err$number = -1
+      msg$ = DSMakeMsg(&quot;DSTAGE_JSG_M_0001\Error calling DSAttachJob(%1)&lt;L&gt;%2&quot;, &quot;p_PH_mr_srvc_item_sub_cat__31_update&quot;:@FM:DSGetLastErrorMsg())
+      msg$id = &quot;@p_PH_mr_srvc_item_sub_cat__31_update&quot;; GoTo L$ERROR
+   End
+   If DSGetJobInfo(h$V0S93, DSJ.JOBMULTIINVOKABLE) Then
+      jb$V0S93 = &quot;p_PH_mr_srvc_item_sub_cat__31_update&quot;:&apos;.&apos;:(P_BATCH_DT)
+   End Else
+      jb$V0S93 = &quot;p_PH_mr_srvc_item_sub_cat__31_update&quot;
+   End
+   dummy$ = DSDetachJob(h$V0S93)
+   b$V0S93skipping = @False
+   h$V0S93$cp = &quot;h$V0S93&quot;
+   If DSCheckPointGetValue(DSJ.ME, h$V0S93$cp, cp$value) = DSJE.NOERROR Then
+      Call DSLogInfo(DSMakeMsg(&quot;DSTAGE_JSG_M_0021\Skipped run of job &apos;%1&apos; on restart&quot;, jb$V0S93), &quot;@p_PH_mr_srvc_item_sub_cat__31_update&quot;)
+      job$V0S93$status = Raise(cp$value&lt;1&gt;)
+      job$V0S93$userstatus = Raise(cp$value&lt;2&gt;)
+      IdV0S93%%Result2%%0 = job$V0S93$userstatus
+      IdV0S93%%Result1%%1 = job$V0S93$status
+      IdV0S93%%Name%%2 = jb$V0S93
+      summary$&lt;1,-1&gt; = Time$$:Convert(@VM, &quot; &quot;, DSMakeMsg(&quot;DSTAGE_JSG_M_0060\%1 (JOB %2) skipped&quot;, &quot;p_PH_mr_srvc_item_sub_cat__31_update&quot;:@FM:jb$V0S93))
+      b$V0S93skipping = @True
+      Goto L$V0S93$SKIPPED
+   End
+   summary$&lt;1,-1&gt; = Time$$:Convert(@VM, &quot; &quot;, DSMakeMsg(&quot;DSTAGE_JSG_M_0057\%1 (JOB %2) started&quot;, &quot;p_PH_mr_srvc_item_sub_cat__31_update&quot;:@FM:jb$V0S93))
+   h$V0S93 = DSAttachJob(jb$V0S93, DSJ.ERRNONE)
+   If (Not(h$V0S93)) Then
+      err$source = &quot;p_PH_mr_srvc_item_sub_cat__31_update&quot;; err$number = -1
+      msg$ = DSMakeMsg(&quot;DSTAGE_JSG_M_0001\Error calling DSAttachJob(%1)&lt;L&gt;%2&quot;, jb$V0S93:@FM:DSGetLastErrorMsg())
+      msg$id = &quot;@p_PH_mr_srvc_item_sub_cat__31_update&quot;; GoTo L$ERROR
+   End
+   h$V0S93 = DSPrepareJob(h$V0S93)
+   If (Not(h$V0S93)) Then
+      err$source = &quot;p_PH_mr_srvc_item_sub_cat__31_update&quot;; err$number = -1
+      msg$ = DSMakeMsg(&quot;DSTAGE_JSG_M_0012\Error calling DSPrepareJob(%1)&lt;L&gt;%2&quot;, jb$V0S93:@FM:DSGetLastErrorMsg())
+      msg$id = &quot;@p_PH_mr_srvc_item_sub_cat__31_update&quot;; GoTo L$ERROR
+   End
+L$V0S93$PREPARED:
+   p$V0S93$1 = &quot;(As pre-defined)&quot;
+   err$code = DSSetParam(h$V0S93, &quot;TOOL_DEFAULTS&quot;, p$V0S93$1)
+   If (err$code &lt;&gt; DSJE.NOERROR) Then
+      err$source = &quot;p_PH_mr_srvc_item_sub_cat__31_update&quot;; err$number = -1
+      msg$ = DSMakeMsg(&quot;DSTAGE_JSG_M_0002\Error calling DSSetParam(%1), code=%2[E]&quot;, &quot;TOOL_DEFAULTS&quot;:@FM:err$code)
+      msg$id = &quot;@p_PH_mr_srvc_item_sub_cat__31_update&quot;; GoTo L$ERROR
+   End
+   p$V0S93$8 = &quot;(As pre-defined)&quot;
+   err$code = DSSetParam(h$V0S93, &quot;DB_PARAMS&quot;, p$V0S93$8)
+   If (err$code &lt;&gt; DSJE.NOERROR) Then
+      err$source = &quot;p_PH_mr_srvc_item_sub_cat__31_update&quot;; err$number = -1
+      msg$ = DSMakeMsg(&quot;DSTAGE_JSG_M_0002\Error calling DSSetParam(%1), code=%2[E]&quot;, &quot;DB_PARAMS&quot;:@FM:err$code)
+      msg$id = &quot;@p_PH_mr_srvc_item_sub_cat__31_update&quot;; GoTo L$ERROR
+   End
+   p$V0S93$12 = &quot;(As pre-defined)&quot;
+   err$code = DSSetParam(h$V0S93, &quot;APP_DEFAULTS&quot;, p$V0S93$12)
+   If (err$code &lt;&gt; DSJE.NOERROR) Then
+      err$source = &quot;p_PH_mr_srvc_item_sub_cat__31_update&quot;; err$number = -1
+      msg$ = DSMakeMsg(&quot;DSTAGE_JSG_M_0002\Error calling DSSetParam(%1), code=%2[E]&quot;, &quot;APP_DEFAULTS&quot;:@FM:err$code)
+      msg$id = &quot;@p_PH_mr_srvc_item_sub_cat__31_update&quot;; GoTo L$ERROR
+   End
+   p$V0S93$16 = ($APT_CONFIG_FILE)
+   err$code = DSSetParam(h$V0S93, &quot;$APT_CONFIG_FILE&quot;, p$V0S93$16)
+   If (err$code &lt;&gt; DSJE.NOERROR) Then
+      err$source = &quot;p_PH_mr_srvc_item_sub_cat__31_update&quot;; err$number = -1
+      msg$ = DSMakeMsg(&quot;DSTAGE_JSG_M_0002\Error calling DSSetParam(%1), code=%2[E]&quot;, &quot;$APT_CONFIG_FILE&quot;:@FM:err$code)
+      msg$id = &quot;@p_PH_mr_srvc_item_sub_cat__31_update&quot;; GoTo L$ERROR
+   End
+   p$V0S93$17 = (P_ETL_USER_ID)
+   err$code = DSSetParam(h$V0S93, &quot;P_ETL_USER_ID&quot;, p$V0S93$17)
+   If (err$code &lt;&gt; DSJE.NOERROR) Then
+      err$source = &quot;p_PH_mr_srvc_item_sub_cat__31_update&quot;; err$number = -1
+      msg$ = DSMakeMsg(&quot;DSTAGE_JSG_M_0002\Error calling DSSetParam(%1), code=%2[E]&quot;, &quot;P_ETL_USER_ID&quot;:@FM:err$code)
+      msg$id = &quot;@p_PH_mr_srvc_item_sub_cat__31_update&quot;; GoTo L$ERROR
+   End
+   p$V0S93$18 = (P_CLA_TBL_PH)
+   err$code = DSSetParam(h$V0S93, &quot;P_CLA_TBL_PH&quot;, p$V0S93$18)
+   If (err$code &lt;&gt; DSJE.NOERROR) Then
+      err$source = &quot;p_PH_mr_srvc_item_sub_cat__31_update&quot;; err$number = -1
+      msg$ = DSMakeMsg(&quot;DSTAGE_JSG_M_0002\Error calling DSSetParam(%1), code=%2[E]&quot;, &quot;P_CLA_TBL_PH&quot;:@FM:err$code)
+      msg$id = &quot;@p_PH_mr_srvc_item_sub_cat__31_update&quot;; GoTo L$ERROR
+   End
+   p$V0S93$19 = (P_CLA_FILE_PH_TMP_REJ)
+   err$code = DSSetParam(h$V0S93, &quot;P_CLA_FILE_PH_TMP_REJ&quot;, p$V0S93$19)
+   If (err$code &lt;&gt; DSJE.NOERROR) Then
+      err$source = &quot;p_PH_mr_srvc_item_sub_cat__31_update&quot;; err$number = -1
+      msg$ = DSMakeMsg(&quot;DSTAGE_JSG_M_0002\Error calling DSSetParam(%1), code=%2[E]&quot;, &quot;P_CLA_FILE_PH_TMP_REJ&quot;:@FM:err$code)
+      msg$id = &quot;@p_PH_mr_srvc_item_sub_cat__31_update&quot;; GoTo L$ERROR
+   End
+   p$V0S93$20 = (P_CLA_DS_PH_SRC)
+   err$code = DSSetParam(h$V0S93, &quot;P_CLA_DS_PH_SRC&quot;, p$V0S93$20)
+   If (err$code &lt;&gt; DSJE.NOERROR) Then
+      err$source = &quot;p_PH_mr_srvc_item_sub_cat__31_update&quot;; err$number = -1
+      msg$ = DSMakeMsg(&quot;DSTAGE_JSG_M_0002\Error calling DSSetParam(%1), code=%2[E]&quot;, &quot;P_CLA_DS_PH_SRC&quot;:@FM:err$code)
+      msg$id = &quot;@p_PH_mr_srvc_item_sub_cat__31_update&quot;; GoTo L$ERROR
+   End
+   err$code = DSRunJob(h$V0S93, DSJ.RUNNORMAL)
+   If (err$code &lt;&gt; DSJE.NOERROR) Then
+      err$source = &quot;p_PH_mr_srvc_item_sub_cat__31_update&quot;; err$number = -1
+      msg$ = DSMakeMsg(&quot;DSTAGE_JSG_M_0003\Error calling DSRunJob(%1), code=%2[E]&quot;, jb$V0S93:@FM:err$code)
+      msg$id = &quot;@p_PH_mr_srvc_item_sub_cat__31_update&quot;; GoTo L$ERROR
+   End
+   handle$list&lt;-1&gt; = h$V0S93
+   id$list&lt;-1&gt; = &quot;V0S93&quot;
+   GoTo L$RETURN$1
+**************************************************
+L$V0S93$FINISHED:
+   job$V0S93$status = DSGetJobInfo(h$V0S93, DSJ.JOBSTATUS)
+   job$V0S93$userstatus = DSGetJobInfo(h$V0S93, DSJ.USERSTATUS)
+   summary$&lt;1,-1&gt; = Time$$:Convert(@VM, &quot; &quot;, DSMakeMsg(&quot;DSTAGE_JSG_M_0063\%1 (JOB %2) finished, status=%3[E]&quot;, &quot;p_PH_mr_srvc_item_sub_cat__31_update&quot;:@FM:jb$V0S93:@FM:job$V0S93$status))
+   IdV0S93%%Result2%%0 = job$V0S93$userstatus
+   IdV0S93%%Result1%%1 = job$V0S93$status
+   IdV0S93%%Name%%2 = jb$V0S93
+   If (job$V0S93$status &lt;&gt; DSJS.RUNOK) Then
+      Call DSLogWarn(DSMakeMsg(&quot;DSTAGE_JSG_M_0030\Job %1 did not finish OK, status = &apos;%2&apos;&quot;, jb$V0S93:@FM:DSTranslateCode(job$V0S93$status)), &quot;@p_PH_mr_srvc_item_sub_cat__31_update&quot;)
+   End
+   rpt$V0S93 = DSMakeJobReport(h$V0S93, 1, &quot;CRLF&quot;)
+   Call DSLogInfo(DSMakeMsg(&quot;DSTAGE_JSG_M_0004\Report on job: %1&lt;L&gt;%2&quot;, jb$V0S93:@FM:rpt$V0S93), &quot;@p_PH_mr_srvc_item_sub_cat__31_update&quot;)
+   dummy$ = DSDetachJob(h$V0S93)
+   If (job$V0S93$status &lt;&gt; DSJS.RUNOK And job$V0S93$status &lt;&gt; DSJS.RUNWARN And Not(b$Abandoning)) Then
+      err$source = &quot;p_PH_mr_srvc_item_sub_cat__31_update&quot;; err$number = 1
+      msg$ = DSMakeMsg(&quot;DSTAGE_JSG_M_0024\Unhandled abort encountered in job %1&quot;, jb$V0S93)
+      msg$id = &quot;@p_PH_mr_srvc_item_sub_cat__31_update&quot;; GoTo L$ERROR
+   End
+   If b$InErrorRef$V0S93 Or (job$V0S93$status &lt;&gt; DSJS.RUNOK And job$V0S93$status &lt;&gt; DSJS.RUNWARN) Then Goto L$V0S93$SKIPPED
+   cp$value = Lower(job$V0S93$status)
+   cp$value&lt;2&gt; = Lower(job$V0S93$userstatus)
+   dummy$ = DSCheckPointSetValue(DSJ.ME, h$V0S93$cp, cp$value)
+   Call DSLogInfo(DSMakeMsg(&quot;DSTAGE_JSG_M_0025\Checkpointed run of job &apos;%1&apos;&quot;, jb$V0S93), &quot;@p_PH_mr_srvc_item_sub_cat__31_update&quot;)
+**************************************************
+L$V0S93$SKIPPED:
+   If b$Abandoning Then GoTo L$WAITFORJOB
+   If (job$V0S93$status = DSJS.RUNOK) Then GoTo L$V0S95$START
+L$V0S93$RETURN$1:
+   If b$V0S93skipping Then GoTo L$RETURN$1
+   GoTo L$WAITFORJOB
+**************************************************
+L$V0S95$START:
+*** Activity &quot;p_PH_mr_srvc_item_sub_cat__32_insert&quot;: Initialize job
+   b$InErrorRef$V0S95 = b$InErrorRef
+   h$V0S95 = DSAttachJob(&quot;p_PH_mr_srvc_item_sub_cat__32_insert&quot;, DSJ.ERRNONE)
+   If (Not(h$V0S95)) Then
+      err$source = &quot;p_PH_mr_srvc_item_sub_cat__32_insert&quot;; err$number = -1
+      msg$ = DSMakeMsg(&quot;DSTAGE_JSG_M_0001\Error calling DSAttachJob(%1)&lt;L&gt;%2&quot;, &quot;p_PH_mr_srvc_item_sub_cat__32_insert&quot;:@FM:DSGetLastErrorMsg())
+      msg$id = &quot;@p_PH_mr_srvc_item_sub_cat__32_insert&quot;; GoTo L$ERROR
+   End
+   If DSGetJobInfo(h$V0S95, DSJ.JOBMULTIINVOKABLE) Then
+      jb$V0S95 = &quot;p_PH_mr_srvc_item_sub_cat__32_insert&quot;:&apos;.&apos;:(P_BATCH_DT)
+   End Else
+      jb$V0S95 = &quot;p_PH_mr_srvc_item_sub_cat__32_insert&quot;
+   End
+   dummy$ = DSDetachJob(h$V0S95)
+   b$V0S95skipping = @False
+   h$V0S95$cp = &quot;h$V0S95&quot;
+   If DSCheckPointGetValue(DSJ.ME, h$V0S95$cp, cp$value) = DSJE.NOERROR Then
+      Call DSLogInfo(DSMakeMsg(&quot;DSTAGE_JSG_M_0021\Skipped run of job &apos;%1&apos; on restart&quot;, jb$V0S95), &quot;@p_PH_mr_srvc_item_sub_cat__32_insert&quot;)
+      job$V0S95$status = Raise(cp$value&lt;1&gt;)
+      job$V0S95$userstatus = Raise(cp$value&lt;2&gt;)
+      IdV0S95%%Result2%%3 = job$V0S95$userstatus
+      IdV0S95%%Result1%%4 = job$V0S95$status
+      IdV0S95%%Name%%5 = jb$V0S95
+      summary$&lt;1,-1&gt; = Time$$:Convert(@VM, &quot; &quot;, DSMakeMsg(&quot;DSTAGE_JSG_M_0060\%1 (JOB %2) skipped&quot;, &quot;p_PH_mr_srvc_item_sub_cat__32_insert&quot;:@FM:jb$V0S95))
+      b$V0S95skipping = @True
+      Goto L$V0S95$SKIPPED
+   End
+   summary$&lt;1,-1&gt; = Time$$:Convert(@VM, &quot; &quot;, DSMakeMsg(&quot;DSTAGE_JSG_M_0057\%1 (JOB %2) started&quot;, &quot;p_PH_mr_srvc_item_sub_cat__32_insert&quot;:@FM:jb$V0S95))
+   h$V0S95 = DSAttachJob(jb$V0S95, DSJ.ERRNONE)
+   If (Not(h$V0S95)) Then
+      err$source = &quot;p_PH_mr_srvc_item_sub_cat__32_insert&quot;; err$number = -1
+      msg$ = DSMakeMsg(&quot;DSTAGE_JSG_M_0001\Error calling DSAttachJob(%1)&lt;L&gt;%2&quot;, jb$V0S95:@FM:DSGetLastErrorMsg())
+      msg$id = &quot;@p_PH_mr_srvc_item_sub_cat__32_insert&quot;; GoTo L$ERROR
+   End
+   h$V0S95 = DSPrepareJob(h$V0S95)
+   If (Not(h$V0S95)) Then
+      err$source = &quot;p_PH_mr_srvc_item_sub_cat__32_insert&quot;; err$number = -1
+      msg$ = DSMakeMsg(&quot;DSTAGE_JSG_M_0012\Error calling DSPrepareJob(%1)&lt;L&gt;%2&quot;, jb$V0S95:@FM:DSGetLastErrorMsg())
+      msg$id = &quot;@p_PH_mr_srvc_item_sub_cat__32_insert&quot;; GoTo L$ERROR
+   End
+L$V0S95$PREPARED:
+   p$V0S95$1 = &quot;(As pre-defined)&quot;
+   err$code = DSSetParam(h$V0S95, &quot;TOOL_DEFAULTS&quot;, p$V0S95$1)
+   If (err$code &lt;&gt; DSJE.NOERROR) Then
+      err$source = &quot;p_PH_mr_srvc_item_sub_cat__32_insert&quot;; err$number = -1
+      msg$ = DSMakeMsg(&quot;DSTAGE_JSG_M_0002\Error calling DSSetParam(%1), code=%2[E]&quot;, &quot;TOOL_DEFAULTS&quot;:@FM:err$code)
+      msg$id = &quot;@p_PH_mr_srvc_item_sub_cat__32_insert&quot;; GoTo L$ERROR
+   End
+   p$V0S95$8 = &quot;(As pre-defined)&quot;
+   err$code = DSSetParam(h$V0S95, &quot;DB_PARAMS&quot;, p$V0S95$8)
+   If (err$code &lt;&gt; DSJE.NOERROR) Then
+      err$source = &quot;p_PH_mr_srvc_item_sub_cat__32_insert&quot;; err$number = -1
+      msg$ = DSMakeMsg(&quot;DSTAGE_JSG_M_0002\Error calling DSSetParam(%1), code=%2[E]&quot;, &quot;DB_PARAMS&quot;:@FM:err$code)
+      msg$id = &quot;@p_PH_mr_srvc_item_sub_cat__32_insert&quot;; GoTo L$ERROR
+   End
+   p$V0S95$12 = &quot;(As pre-defined)&quot;
+   err$code = DSSetParam(h$V0S95, &quot;APP_DEFAULTS&quot;, p$V0S95$12)
+   If (err$code &lt;&gt; DSJE.NOERROR) Then
+      err$source = &quot;p_PH_mr_srvc_item_sub_cat__32_insert&quot;; err$number = -1
+      msg$ = DSMakeMsg(&quot;DSTAGE_JSG_M_0002\Error calling DSSetParam(%1), code=%2[E]&quot;, &quot;APP_DEFAULTS&quot;:@FM:err$code)
+      msg$id = &quot;@p_PH_mr_srvc_item_sub_cat__32_insert&quot;; GoTo L$ERROR
+   End
+   p$V0S95$16 = (P_ETL_RUN_ID)
+   err$code = DSSetParam(h$V0S95, &quot;P_ETL_RUN_ID&quot;, p$V0S95$16)
+   If (err$code &lt;&gt; DSJE.NOERROR) Then
+      err$source = &quot;p_PH_mr_srvc_item_sub_cat__32_insert&quot;; err$number = -1
+      msg$ = DSMakeMsg(&quot;DSTAGE_JSG_M_0002\Error calling DSSetParam(%1), code=%2[E]&quot;, &quot;P_ETL_RUN_ID&quot;:@FM:err$code)
+      msg$id = &quot;@p_PH_mr_srvc_item_sub_cat__32_insert&quot;; GoTo L$ERROR
+   End
+   p$V0S95$17 = ($APT_CONFIG_FILE)
+   err$code = DSSetParam(h$V0S95, &quot;$APT_CONFIG_FILE&quot;, p$V0S95$17)
+   If (err$code &lt;&gt; DSJE.NOERROR) Then
+      err$source = &quot;p_PH_mr_srvc_item_sub_cat__32_insert&quot;; err$number = -1
+      msg$ = DSMakeMsg(&quot;DSTAGE_JSG_M_0002\Error calling DSSetParam(%1), code=%2[E]&quot;, &quot;$APT_CONFIG_FILE&quot;:@FM:err$code)
+      msg$id = &quot;@p_PH_mr_srvc_item_sub_cat__32_insert&quot;; GoTo L$ERROR
+   End
+   p$V0S95$18 = (P_ETL_USER_ID)
+   err$code = DSSetParam(h$V0S95, &quot;P_ETL_USER_ID&quot;, p$V0S95$18)
+   If (err$code &lt;&gt; DSJE.NOERROR) Then
+      err$source = &quot;p_PH_mr_srvc_item_sub_cat__32_insert&quot;; err$number = -1
+      msg$ = DSMakeMsg(&quot;DSTAGE_JSG_M_0002\Error calling DSSetParam(%1), code=%2[E]&quot;, &quot;P_ETL_USER_ID&quot;:@FM:err$code)
+      msg$id = &quot;@p_PH_mr_srvc_item_sub_cat__32_insert&quot;; GoTo L$ERROR
+   End
+   p$V0S95$19 = (P_CLA_TBL_PH)
+   err$code = DSSetParam(h$V0S95, &quot;P_CLA_TBL_PH&quot;, p$V0S95$19)
+   If (err$code &lt;&gt; DSJE.NOERROR) Then
+      err$source = &quot;p_PH_mr_srvc_item_sub_cat__32_insert&quot;; err$number = -1
+      msg$ = DSMakeMsg(&quot;DSTAGE_JSG_M_0002\Error calling DSSetParam(%1), code=%2[E]&quot;, &quot;P_CLA_TBL_PH&quot;:@FM:err$code)
+      msg$id = &quot;@p_PH_mr_srvc_item_sub_cat__32_insert&quot;; GoTo L$ERROR
+   End
+   p$V0S95$20 = (P_CLA_FILE_PH_TMP_REJ)
+   err$code = DSSetParam(h$V0S95, &quot;P_CLA_FILE_PH_TMP_REJ&quot;, p$V0S95$20)
+   If (err$code &lt;&gt; DSJE.NOERROR) Then
+      err$source = &quot;p_PH_mr_srvc_item_sub_cat__32_insert&quot;; err$number = -1
+      msg$ = DSMakeMsg(&quot;DSTAGE_JSG_M_0002\Error calling DSSetParam(%1), code=%2[E]&quot;, &quot;P_CLA_FILE_PH_TMP_REJ&quot;:@FM:err$code)
+      msg$id = &quot;@p_PH_mr_srvc_item_sub_cat__32_insert&quot;; GoTo L$ERROR
+   End
+   p$V0S95$21 = (P_CLA_DS_PH_SRC)
+   err$code = DSSetParam(h$V0S95, &quot;P_CLA_DS_PH_SRC&quot;, p$V0S95$21)
+   If (err$code &lt;&gt; DSJE.NOERROR) Then
+      err$source = &quot;p_PH_mr_srvc_item_sub_cat__32_insert&quot;; err$number = -1
+      msg$ = DSMakeMsg(&quot;DSTAGE_JSG_M_0002\Error calling DSSetParam(%1), code=%2[E]&quot;, &quot;P_CLA_DS_PH_SRC&quot;:@FM:err$code)
+      msg$id = &quot;@p_PH_mr_srvc_item_sub_cat__32_insert&quot;; GoTo L$ERROR
+   End
+   err$code = DSRunJob(h$V0S95, DSJ.RUNNORMAL)
+   If (err$code &lt;&gt; DSJE.NOERROR) Then
+      err$source = &quot;p_PH_mr_srvc_item_sub_cat__32_insert&quot;; err$number = -1
+      msg$ = DSMakeMsg(&quot;DSTAGE_JSG_M_0003\Error calling DSRunJob(%1), code=%2[E]&quot;, jb$V0S95:@FM:err$code)
+      msg$id = &quot;@p_PH_mr_srvc_item_sub_cat__32_insert&quot;; GoTo L$ERROR
+   End
+   handle$list&lt;-1&gt; = h$V0S95
+   id$list&lt;-1&gt; = &quot;V0S95&quot;
+   GoTo L$V0S93$RETURN$1
+**************************************************
+L$V0S95$FINISHED:
+   job$V0S95$status = DSGetJobInfo(h$V0S95, DSJ.JOBSTATUS)
+   job$V0S95$userstatus = DSGetJobInfo(h$V0S95, DSJ.USERSTATUS)
+   summary$&lt;1,-1&gt; = Time$$:Convert(@VM, &quot; &quot;, DSMakeMsg(&quot;DSTAGE_JSG_M_0063\%1 (JOB %2) finished, status=%3[E]&quot;, &quot;p_PH_mr_srvc_item_sub_cat__32_insert&quot;:@FM:jb$V0S95:@FM:job$V0S95$status))
+   IdV0S95%%Result2%%3 = job$V0S95$userstatus
+   IdV0S95%%Result1%%4 = job$V0S95$status
+   IdV0S95%%Name%%5 = jb$V0S95
+   If (job$V0S95$status &lt;&gt; DSJS.RUNOK) Then
+      Call DSLogWarn(DSMakeMsg(&quot;DSTAGE_JSG_M_0030\Job %1 did not finish OK, status = &apos;%2&apos;&quot;, jb$V0S95:@FM:DSTranslateCode(job$V0S95$status)), &quot;@p_PH_mr_srvc_item_sub_cat__32_insert&quot;)
+   End
+   rpt$V0S95 = DSMakeJobReport(h$V0S95, 1, &quot;CRLF&quot;)
+   Call DSLogInfo(DSMakeMsg(&quot;DSTAGE_JSG_M_0004\Report on job: %1&lt;L&gt;%2&quot;, jb$V0S95:@FM:rpt$V0S95), &quot;@p_PH_mr_srvc_item_sub_cat__32_insert&quot;)
+   dummy$ = DSDetachJob(h$V0S95)
+   If (job$V0S95$status &lt;&gt; DSJS.RUNOK And job$V0S95$status &lt;&gt; DSJS.RUNWARN And Not(b$Abandoning)) Then
+      err$source = &quot;p_PH_mr_srvc_item_sub_cat__32_insert&quot;; err$number = 1
+      msg$ = DSMakeMsg(&quot;DSTAGE_JSG_M_0024\Unhandled abort encountered in job %1&quot;, jb$V0S95)
+      msg$id = &quot;@p_PH_mr_srvc_item_sub_cat__32_insert&quot;; GoTo L$ERROR
+   End
+   If b$InErrorRef$V0S95 Or (job$V0S95$status &lt;&gt; DSJS.RUNOK And job$V0S95$status &lt;&gt; DSJS.RUNWARN) Then Goto L$V0S95$SKIPPED
+   cp$value = Lower(job$V0S95$status)
+   cp$value&lt;2&gt; = Lower(job$V0S95$userstatus)
+   dummy$ = DSCheckPointSetValue(DSJ.ME, h$V0S95$cp, cp$value)
+   Call DSLogInfo(DSMakeMsg(&quot;DSTAGE_JSG_M_0025\Checkpointed run of job &apos;%1&apos;&quot;, jb$V0S95), &quot;@p_PH_mr_srvc_item_sub_cat__32_insert&quot;)
+**************************************************
+L$V0S95$SKIPPED:
+   If b$V0S95skipping Then GoTo L$V0S93$RETURN$1
+   GoTo L$WAITFORJOB
+**************************************************
+L$WAITFORJOB:
+   If handle$list = &quot;&quot; Then GoTo L$FINISH
+   handle$ = DSWaitForJob(handle$list)
+   If handle$ = 0 Then handle$ = handle$list&lt;1&gt;
+   Locate handle$ In handle$list Setting index$ Then
+      id$ = id$list&lt;index$&gt;
+      Del id$list&lt;index$&gt;; Del handle$list&lt;index$&gt;
+      b$Abandoning = abort$list&lt;index$&gt;; Del abort$list&lt;index$&gt;
+      Begin Case
+      Case id$ = &quot;V0S93&quot;
+         GoTo L$V0S93$FINISHED
+      Case id$ = &quot;V0S95&quot;
+         GoTo L$V0S95$FINISHED
+      End Case
+   End
+* Error if fall though
+   handle$list = &quot;&quot;
+   err$source = &quot;@Coordinator&quot;; err$number = -1
+   msg$ = DSMakeMsg(&quot;DSTAGE_JSG_M_0008\Error calling DSWaitForJob(), code=%1[E]&quot;, handle$)
+   msg$id = &quot;@Coordinator&quot;; GoTo L$ERROR
+**************************************************
+L$ERROR:
+   Call DSLogWarn(DSMakeMsg(&quot;DSTAGE_JSG_M_0009\Controller problem: %1&quot;, msg$), msg$id)
+   summary$&lt;1,-1&gt; = Time$$:Convert(@VM, &quot; &quot;, DSMakeMsg(&quot;DSTAGE_JSG_M_0052\Exception raised: %1&quot;, msg$id:&quot;, &quot;:msg$))
+   If Not(b$InErrorRef) Then
+      dummy$ = DSCheckPointSetValue(DSJ.ME, &quot;!&quot;, DSMakeMsg(&quot;DSTAGE_JSG_M_0031\Failed at: %1, Reason=%2&quot;, err$source:@FM:msg$))
+   End
+   abort$list = Ifs(handle$list, Str(1:@FM, DCount(handle$list, @FM)), &quot;&quot;)
+   b$Abandoning = @True
+   GoTo L$WAITFORJOB
+L$ABORT:
+   summary$&lt;1,-1&gt; = Time$$:Convert(@VM, &quot; &quot;, DSMakeMsg(&quot;DSTAGE_JSG_M_0055\Sequence failed (restartable)&quot;, &quot;&quot;))
+   x$masked$summary = summary$
+   Call DSMaskExecArgs(x$masked$summary, &apos;&apos;)
+   Call DSLogInfo(x$masked$summary, &quot;@Coordinator&quot;)
+   Call DSLogFatal(DSMakeMsg(&quot;DSTAGE_JSG_M_0014\Sequence job (restartable) will abort due to previous unrecoverable errors&quot;, &quot;&quot;), &quot;@Coordinator&quot;)
+**************************************************
+L$FINISH:
+   If b$Abandoning Then GoTo L$ABORT
+*** At successful exit remove checkpoint record
+   If Not(b$InErrorRef) And DSCheckPointExists(DSJ.ME, cp$dtm) Then
+      dummy$ = DSCheckPointDelete(DSJ.ME)
+      Call DSLogInfo(DSMakeMsg(&quot;DSTAGE_JSG_M_0018\Removed checkpoint record at successful completion of sequence&quot;, &quot;&quot;), &quot;@Coordinator&quot;)
+   End
+   summary$&lt;1,-1&gt; = Time$$:Convert(@VM, &quot; &quot;, DSMakeMsg(&quot;DSTAGE_JSG_M_0054\Sequence finished OK&quot;, &quot;&quot;))
+   x$masked$summary = summary$
+   Call DSMaskExecArgs(x$masked$summary, &apos;&apos;)
+   Call DSLogInfo(x$masked$summary, &quot;@Coordinator&quot;)
+   L$EXIT: Return To L$EXIT
+ 
+</Property>
+         <Property Name="ControlAfterSubr">0</Property>
+         <Collection Name="Parameters" Type="Parameters">
+            <SubRecord>
+               <Property Name="Name">P_BATCH_DT</Property>
+               <Property Name="Prompt">P_BATCH_DT</Property>
+               <Property Name="Default">unknown</Property>
+               <Property Name="ParamType">6</Property>
+               <Property Name="ParamLength">0</Property>
+               <Property Name="ParamScale">0</Property>
+            </SubRecord>
+            <SubRecord>
+               <Property Name="Name">P_LATEST_SEND_DATE_TRIG_DTM</Property>
+               <Property Name="Prompt">P_LATEST_SEND_DATE_TRIG_DTM</Property>
+               <Property Name="Default">6666-12-31 00:00:00</Property>
+               <Property Name="ParamType">0</Property>
+               <Property Name="ParamLength">0</Property>
+               <Property Name="ParamScale">0</Property>
+            </SubRecord>
+            <SubRecord>
+               <Property Name="Name">P_CLA_TBL_PH</Property>
+               <Property Name="Prompt">Table name for layer PH.</Property>
+               <Property Name="ParamType">0</Property>
+               <Property Name="ParamLength">0</Property>
+               <Property Name="ParamScale">0</Property>
+            </SubRecord>
+            <SubRecord>
+               <Property Name="Name">P_ETL_RUN_ID</Property>
+               <Property Name="Prompt">P_ETL_RUN_ID</Property>
+               <Property Name="Default">17</Property>
+               <Property Name="ParamType">0</Property>
+               <Property Name="ParamLength">0</Property>
+               <Property Name="ParamScale">0</Property>
+            </SubRecord>
+            <SubRecord>
+               <Property Name="Name">P_ETL_USER_ID</Property>
+               <Property Name="Prompt">P_ETL_USER_ID</Property>
+               <Property Name="Default">cla_etl</Property>
+               <Property Name="ParamType">0</Property>
+               <Property Name="ParamLength">0</Property>
+               <Property Name="ParamScale">0</Property>
+            </SubRecord>
+            <SubRecord>
+               <Property Name="Name">P_CLA_FILE_PH_TMP_REJ</Property>
+               <Property Name="Prompt">P_CLA_FILE_PH_TMP_REJ</Property>
+               <Property Name="Default">/ikea/InformationServer/Server/Projects/Project_Plus/CLA_DEV_03/datasets/PH/pra/pra_ph_tmp</Property>
+               <Property Name="ParamType">0</Property>
+               <Property Name="ParamLength">0</Property>
+               <Property Name="ParamScale">0</Property>
+            </SubRecord>
+            <SubRecord>
+               <Property Name="Name">$APT_CONFIG_FILE</Property>
+               <Property Name="Prompt">Configuration file</Property>
+               <Property Name="Default">$PROJDEF</Property>
+               <Property Name="HelpTxt">The Parallel job configuration file.</Property>
+               <Property Name="ParamType">4</Property>
+               <Property Name="ParamLength">0</Property>
+               <Property Name="ParamScale">0</Property>
+            </SubRecord>
+            <SubRecord>
+               <Property Name="Name">P_CLA_DS_PH_SRC</Property>
+               <Property Name="Prompt">P_CLA_DS_PH_SRC</Property>
+               <Property Name="Default">/ikea/InformationServer/Server/Projects/Project_Plus/CLA_DEV_03/datasets/SV/pra/pra_sv_tmp_land.ds</Property>
+               <Property Name="ParamType">0</Property>
+               <Property Name="ParamLength">0</Property>
+               <Property Name="ParamScale">0</Property>
+            </SubRecord>
+         </Collection>
+         <Collection Name="MetaBag" Type="MetaProperty">
+            <SubRecord>
+               <Property Name="Owner">APT</Property>
+               <Property Name="Name">AdvancedRuntimeOptions</Property>
+               <Property Name="Value">#DSProjectARTOptions#</Property>
+            </SubRecord>
+            <SubRecord>
+               <Property Name="Owner">APT</Property>
+               <Property Name="Name">SequenceUseGridProperties</Property>
+               <Property Name="Value">0</Property>
+            </SubRecord>
+         </Collection>
+         <Property Name="NULLIndicatorPosition">0</Property>
+         <Collection Name="Dependencies" Type="JobDepend">
+            <SubRecord>
+               <Property Name="Name">p_PH_mr_srvc_item_sub_cat__31_update</Property>
+               <Property Name="Type">0</Property>
+            </SubRecord>
+            <SubRecord>
+               <Property Name="Name">p_PH_mr_srvc_item_sub_cat__32_insert</Property>
+               <Property Name="Type">0</Property>
+            </SubRecord>
+         </Collection>
+         <Property Name="IsTemplate">0</Property>
+         <Property Name="NLSLocale">,,,,</Property>
+         <Property Name="JobType">2</Property>
+         <Property Name="Category">\08-Release-CFF\30-PH\MR\mr_srvc_item_sub_cat</Property>
+         <Property Name="CenturyBreakYear">30</Property>
+         <Property Name="NextAliasID">2</Property>
+         <Property Name="ParameterFileDDName">DD00001</Property>
+         <Property Name="ReservedWordCheck">1</Property>
+         <Property Name="TransactionSize">0</Property>
+         <Property Name="ValidationStatus">0</Property>
+         <Property Name="Uploadable">0</Property>
+         <Property Name="PgmCustomizationFlag">0</Property>
+         <Property Name="JobReportFlag">0</Property>
+         <Property Name="AllowMultipleInvocations">0</Property>
+         <Property Name="JobSeqCodeGenOpts">checkpoints,logjoberrors,logjobreports,handleaborts</Property>
+         <Property Name="Act2ActOverideDefaults">0</Property>
+         <Property Name="Act2ActEnableRowBuffer">0</Property>
+         <Property Name="Act2ActUseIPC">0</Property>
+         <Property Name="Act2ActBufferSize">0</Property>
+         <Property Name="Act2ActIPCTimeout">0</Property>
+         <Property Name="ExpressionSemanticCheckFlag">0</Property>
+         <Property Name="TraceOption">0</Property>
+         <Property Name="EnableCacheSharing">0</Property>
+         <Property Name="RuntimeColumnPropagation">0</Property>
+         <Property Name="RelStagesInJobStatus">-1</Property>
+         <Property Name="WebServiceEnabled">0</Property>
+         <Property Name="MFProcessMetaData">0</Property>
+         <Property Name="MFProcessMetaDataXMLFileExchangeMethod">0</Property>
+         <Property Name="IMSProgType">0</Property>
+         <Property Name="CopyLibPrefix">ARDT</Property>
+         <Property Name="RecordPerformanceResults">0</Property>
+      </Record>
+      <Record Identifier="V0" Type="ContainerView" Readonly="0">
+         <Property Name="Name">Job</Property>
+         <Property Name="NextID">1</Property>
+         <Property Name="IsTopLevel">0</Property>
+         <Property Name="StageList">V0A38|V0S93|V0S95|V0A97</Property>
+         <Property Name="StageXPos">591|912|1152|589</Property>
+         <Property Name="StageYPos">310|384|384|104</Property>
+         <Property Name="StageTypes">ID_PALETTEANNOTATION|CJSJobActivity|CJSJobActivity|ID_PALETTEJOBANNOTATION</Property>
+         <Property Name="NextStageID">98</Property>
+         <Property Name="SnapToGrid">1</Property>
+         <Property Name="GridLines">0</Property>
+         <Property Name="ZoomValue">80</Property>
+         <Property Name="StageXSize">950|48|48|935</Property>
+         <Property Name="StageYSize">250|48|48|150</Property>
+         <Property Name="ContainerViewSizing">0180 0180 1216 0640 0000 0001 0527 0080</Property>
+         <Property Name="StageNames">\(20)|p_PH_mr_srvc_item_sub_cat__31_update|p_PH_mr_srvc_item_sub_cat__32_insert|\(20)</Property>
+         <Property Name="StageTypeIDs">\(20)|CJobActivity|CJobActivity|\(20)</Property>
+         <Property Name="LinkNames">\(20)|lnk_to_PH_insert| |\(20)</Property>
+         <Property Name="LinkHasMetaDatas">\(20)|False| |\(20)</Property>
+         <Property Name="LinkTypes">\(20)|1| |\(20)</Property>
+         <Property Name="LinkNamePositionXs">\(20)|998| |\(20)</Property>
+         <Property Name="LinkNamePositionYs">\(20)|408| |\(20)</Property>
+         <Property Name="TargetStageIDs">\(20)|V0S95| |\(20)</Property>
+         <Property Name="SourceStageEffectiveExecutionModes">\(20)|0| |\(20)</Property>
+         <Property Name="SourceStageRuntimeExecutionModes">\(20)|0| |\(20)</Property>
+         <Property Name="TargetStageEffectiveExecutionModes">\(20)|0| |\(20)</Property>
+         <Property Name="TargetStageRuntimeExecutionModes">\(20)|0| |\(20)</Property>
+         <Property Name="LinkIsSingleOperatorLookup">\(20)|False| |\(20)</Property>
+         <Property Name="LinkIsSortSequential">\(20)|False| |\(20)</Property>
+         <Property Name="LinkSortMode">\(20)|0| |\(20)</Property>
+         <Property Name="LinkPartColMode">\(20)|0| |\(20)</Property>
+         <Property Name="LinkSourcePinIDs">\(20)|V0S93P1| |\(20)</Property>
+      </Record>
+      <Record Identifier="V0A38" Type="Annotation" Readonly="0">
+         <Property Name="Name">V0A38</Property>
+         <Property Name="NextID">0</Property>
+         <Property Name="AnnotationType">0</Property>
+         <Property Name="AnnotationText">PUBLISH</Property>
+         <Property Name="TextFont">MS Shell Dlg\10\0\0\0\400\0</Property>
+         <Property Name="TextHorizontalJustification">1</Property>
+         <Property Name="TextVerticalJustification">0</Property>
+         <Property Name="TextColor">0</Property>
+         <Property Name="BackgroundColor">12713983</Property>
+         <Property Name="BackgroundTransparent">0</Property>
+         <Property Name="BorderVisible">1</Property>
+      </Record>
+      <Record Identifier="V0A97" Type="Annotation" Readonly="0">
+         <Property Name="Name">V0A97</Property>
+         <Property Name="NextID">0</Property>
+         <Property Name="AnnotationType">2</Property>
+         <Property Name="TextFont">Microsoft Sans Serif\10\0\0\0\400\0</Property>
+         <Property Name="TextHorizontalJustification">0</Property>
+         <Property Name="TextVerticalJustification">0</Property>
+         <Property Name="TextColor">0</Property>
+         <Property Name="BackgroundColor">12713983</Property>
+         <Property Name="BackgroundTransparent">0</Property>
+         <Property Name="BorderVisible">1</Property>
+      </Record>
+      <Record Identifier="V0S93" Type="JSJobActivity" Readonly="0">
+         <Property Name="Name">p_PH_mr_srvc_item_sub_cat__31_update</Property>
+         <Property Name="NextID">2</Property>
+         <Property Name="OutputPins">V0S93P1</Property>
+         <Property Name="JobType">0</Property>
+         <Property Name="ExecutionType">1</Property>
+         <Property Name="Jobname">p_PH_mr_srvc_item_sub_cat__31_update</Property>
+         <Collection Name="JobInvocationID" Type="ParamValues">
+            <SubRecord>
+               <Property Name="Description">#P_BATCH_DT#</Property>
+               <Property Name="ValueType">4</Property>
+               <Property Name="DisplayValue">#P_BATCH_DT#</Property>
+            </SubRecord>
+         </Collection>
+         <Collection Name="ParameterValues" Type="ParamValues">
+            <SubRecord>
+               <Property Name="Name">TOOL_DEFAULTS</Property>
+               <Property Name="Description">&quot;(As pre-defined)&quot;</Property>
+               <Property Name="ValueType">4</Property>
+               <Property Name="DisplayValue">&quot;(As pre-defined)&quot;</Property>
+            </SubRecord>
+            <SubRecord>
+               <Property Name="Name">DB_PARAMS</Property>
+               <Property Name="Description">&quot;(As pre-defined)&quot;</Property>
+               <Property Name="ValueType">4</Property>
+               <Property Name="DisplayValue">&quot;(As pre-defined)&quot;</Property>
+            </SubRecord>
+            <SubRecord>
+               <Property Name="Name">APP_DEFAULTS</Property>
+               <Property Name="Description">&quot;(As pre-defined)&quot;</Property>
+               <Property Name="ValueType">4</Property>
+               <Property Name="DisplayValue">&quot;(As pre-defined)&quot;</Property>
+            </SubRecord>
+            <SubRecord>
+               <Property Name="Name">$APT_CONFIG_FILE</Property>
+               <Property Name="Description">$APT_CONFIG_FILE</Property>
+               <Property Name="ValueType">4</Property>
+               <Property Name="DisplayValue">$APT_CONFIG_FILE</Property>
+            </SubRecord>
+            <SubRecord>
+               <Property Name="Name">P_ETL_USER_ID</Property>
+               <Property Name="Description">P_ETL_USER_ID</Property>
+               <Property Name="ValueType">4</Property>
+               <Property Name="DisplayValue">P_ETL_USER_ID</Property>
+            </SubRecord>
+            <SubRecord>
+               <Property Name="Name">P_CLA_TBL_PH</Property>
+               <Property Name="Description">P_CLA_TBL_PH</Property>
+               <Property Name="ValueType">4</Property>
+               <Property Name="DisplayValue">P_CLA_TBL_PH</Property>
+            </SubRecord>
+            <SubRecord>
+               <Property Name="Name">P_CLA_FILE_PH_TMP_REJ</Property>
+               <Property Name="Description">P_CLA_FILE_PH_TMP_REJ</Property>
+               <Property Name="ValueType">4</Property>
+               <Property Name="DisplayValue">P_CLA_FILE_PH_TMP_REJ</Property>
+            </SubRecord>
+            <SubRecord>
+               <Property Name="Name">P_CLA_DS_PH_SRC</Property>
+               <Property Name="Description">P_CLA_DS_PH_SRC</Property>
+               <Property Name="ValueType">4</Property>
+               <Property Name="DisplayValue">P_CLA_DS_PH_SRC</Property>
+            </SubRecord>
+         </Collection>
+         <Property Name="CheckPoint">0</Property>
+         <Property Name="StageType">CJobActivity</Property>
+      </Record>
+      <Record Identifier="V0S93P1" Type="JSActivityOutput" Readonly="0">
+         <Property Name="Name">lnk_to_PH_insert</Property>
+         <Property Name="Partner">V0S95|V0S95P1</Property>
+         <Property Name="ConditionType">2</Property>
+         <Property Name="TriggerExpression">&quot;Executed OK&quot;</Property>
+         <Property Name="LeftTextPos">998</Property>
+         <Property Name="TopTextPos">408</Property>
+         <Property Name="SourceID">V56S0</Property>
+      </Record>
+      <Record Identifier="V0S95" Type="JSJobActivity" Readonly="0">
+         <Property Name="Name">p_PH_mr_srvc_item_sub_cat__32_insert</Property>
+         <Property Name="NextID">2</Property>
+         <Property Name="InputPins">V0S95P1</Property>
+         <Property Name="JobType">0</Property>
+         <Property Name="ExecutionType">1</Property>
+         <Property Name="Jobname">p_PH_mr_srvc_item_sub_cat__32_insert</Property>
+         <Collection Name="JobInvocationID" Type="ParamValues">
+            <SubRecord>
+               <Property Name="Description">#P_BATCH_DT#</Property>
+               <Property Name="ValueType">4</Property>
+               <Property Name="DisplayValue">#P_BATCH_DT#</Property>
+            </SubRecord>
+         </Collection>
+         <Collection Name="ParameterValues" Type="ParamValues">
+            <SubRecord>
+               <Property Name="Name">TOOL_DEFAULTS</Property>
+               <Property Name="Description">&quot;(As pre-defined)&quot;</Property>
+               <Property Name="ValueType">4</Property>
+               <Property Name="DisplayValue">&quot;(As pre-defined)&quot;</Property>
+            </SubRecord>
+            <SubRecord>
+               <Property Name="Name">DB_PARAMS</Property>
+               <Property Name="Description">&quot;(As pre-defined)&quot;</Property>
+               <Property Name="ValueType">4</Property>
+               <Property Name="DisplayValue">&quot;(As pre-defined)&quot;</Property>
+            </SubRecord>
+            <SubRecord>
+               <Property Name="Name">APP_DEFAULTS</Property>
+               <Property Name="Description">&quot;(As pre-defined)&quot;</Property>
+               <Property Name="ValueType">4</Property>
+               <Property Name="DisplayValue">&quot;(As pre-defined)&quot;</Property>
+            </SubRecord>
+            <SubRecord>
+               <Property Name="Name">P_ETL_RUN_ID</Property>
+               <Property Name="Description">P_ETL_RUN_ID</Property>
+               <Property Name="ValueType">4</Property>
+               <Property Name="DisplayValue">P_ETL_RUN_ID</Property>
+            </SubRecord>
+            <SubRecord>
+               <Property Name="Name">$APT_CONFIG_FILE</Property>
+               <Property Name="Description">$APT_CONFIG_FILE</Property>
+               <Property Name="ValueType">4</Property>
+               <Property Name="DisplayValue">$APT_CONFIG_FILE</Property>
+            </SubRecord>
+            <SubRecord>
+               <Property Name="Name">P_ETL_USER_ID</Property>
+               <Property Name="Description">P_ETL_USER_ID</Property>
+               <Property Name="ValueType">4</Property>
+               <Property Name="DisplayValue">P_ETL_USER_ID</Property>
+            </SubRecord>
+            <SubRecord>
+               <Property Name="Name">P_CLA_TBL_PH</Property>
+               <Property Name="Description">P_CLA_TBL_PH</Property>
+               <Property Name="ValueType">4</Property>
+               <Property Name="DisplayValue">P_CLA_TBL_PH</Property>
+            </SubRecord>
+            <SubRecord>
+               <Property Name="Name">P_CLA_FILE_PH_TMP_REJ</Property>
+               <Property Name="Description">P_CLA_FILE_PH_TMP_REJ</Property>
+               <Property Name="ValueType">4</Property>
+               <Property Name="DisplayValue">P_CLA_FILE_PH_TMP_REJ</Property>
+            </SubRecord>
+            <SubRecord>
+               <Property Name="Name">P_CLA_DS_PH_SRC</Property>
+               <Property Name="Description">P_CLA_DS_PH_SRC</Property>
+               <Property Name="ValueType">4</Property>
+               <Property Name="DisplayValue">P_CLA_DS_PH_SRC</Property>
+            </SubRecord>
+         </Collection>
+         <Property Name="CheckPoint">0</Property>
+         <Property Name="StageType">CJobActivity</Property>
+      </Record>
+      <Record Identifier="V0S95P1" Type="JSActivityInput" Readonly="0">
+         <Property Name="Name">lnk_to_PH_insert</Property>
+         <Property Name="Partner">V0S93|V0S93P1</Property>
+         <Property Name="LinkType">1</Property>
+      </Record>
+   </Job>
+</DSExport>
