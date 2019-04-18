@@ -6,7 +6,7 @@
          <Property Name="Name">s_PH_mr_srvc_item_sub_cat__master</Property>
          <Property Name="NextID">62</Property>
          <Property Name="Container">V0</Property>
-         <Property Name="FullDescription">Publishes data made available by Validation processing or, Extract processing where there are no Validation violations.  Simply inserts the data made available adding an effective start date of the BATCH_DT after updating (or &apos;closing&apos;) any &apos;open&apos; rows for the same source primary key by updating the effective end date to the batch date minus 1 day.   Processing of event data which is never updated would not perform the initial update step to &apos;close&apos; rows and this job should not appear in this sequence.</Property>
+         <Property Name="FullDescription">New commit. Publishes data made available by Validation processing or, Extract processing where there are no Validation violations.  Simply inserts the data made available adding an effective start date of the BATCH_DT after updating (or &apos;closing&apos;) any &apos;open&apos; rows for the same source primary key by updating the effective end date to the batch date minus 1 day.   Processing of event data which is never updated would not perform the initial update step to &apos;close&apos; rows and this job should not appear in this sequence.</Property>
          <Property Name="JobVersion">56.0.0</Property>
          <Property Name="JobControlCode" PreFormatted="1">* Tokens were replaced below as follows:
 * IdV0S93%%Result2%%0 &lt;= p_PH_mr_srvc_item_sub_cat__31_update.$UserStatus
